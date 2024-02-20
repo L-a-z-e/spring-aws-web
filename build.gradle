@@ -25,10 +25,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'junit:junit:4.12'
-}
 
-tasks.named('test') {
-    useJUnitPlatform()
+    // 해당버전에서는 JUnit5가 들어가있어서 이를 제외하고 > Junit4를 testImplementation
+    testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.jupiter', module: 'junit-jupiter'
+    }
+    testImplementation 'junit:junit:4.13.2'
+
+    // Spring Data Jpa 추상화 라이브러리
+    // Spring 버전에 맞게 JPA관련 라이브러리 버전관리
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    // 인메모리 관계형 데이터베이스
+    // 메모리에서 실행되기때문에 애플리케이션을 재시작할 때마다 초기화됨 -> 테스트용도로 많이 사용됨
+    implementation('com.h2database:h2')
 }

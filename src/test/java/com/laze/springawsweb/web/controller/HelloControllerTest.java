@@ -1,16 +1,15 @@
-package com.laze.springawsweb.controller;
+package com.laze.springawsweb.web.controller;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.is;
 
 /**
  * RunWith
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = HelloController.class)
-class HelloControllerTest {
+    public class HelloControllerTest {
 
     /**
      * Autowired
@@ -51,11 +50,32 @@ class HelloControllerTest {
      *  응답 본문의 내용 검증
      */
     @Test
-    void hello() throws Exception {
+    public void hello() throws Exception {
         String hello = "hello";
 
         mvc.perform(get("/hello"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(hello));
+    }
+
+    @Test
+    public void helloDto() throws Exception {
+        //given
+        String name = "hello";
+        int amount = 1000;
+
+        /**
+         * param
+         *  API 테스트시 사용될 요청 파라미터 설정, String 만 허용 -> 숫자, 날짜는 문자열로 변경해야함
+         * jsonPath
+         *  JSON 응답값을 필드별로 검증할 수 있는 메서드
+         *  $기준으로 필드명 명시
+         */
+        mvc.perform(get("/hello/dto")
+                .param("name", name)
+                .param("amount", String.valueOf(amount)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(name)))
+                .andExpect(jsonPath("$.amount",is(amount)));
     }
 }
