@@ -1,6 +1,5 @@
 package com.laze.springawsweb.web.dto;
 
-import com.laze.springawsweb.web.dto.HelloResponseDto;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
