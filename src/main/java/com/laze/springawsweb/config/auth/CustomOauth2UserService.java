@@ -1,6 +1,7 @@
 package com.laze.springawsweb.config.auth;
 
 import com.laze.springawsweb.config.auth.dto.OAuthAttributes;
+import com.laze.springawsweb.config.auth.dto.SessionUser;
 import com.laze.springawsweb.domain.user.User;
 import com.laze.springawsweb.domain.user.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -39,7 +40,7 @@ public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         User user = saveOrUpdate(attributes);
 
-        httpSession.setAttribute("user", new SeesionUser(user)); // 세션에 사용자 정보를 저장하기위한 Dto 클래스
+        httpSession.setAttribute("user", new SessionUser(user)); // 세션에 사용자 정보를 저장하기위한 Dto 클래스
 
         return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())), attributes.getAttributes(), attributes.getNameAttributeKey() );
     }

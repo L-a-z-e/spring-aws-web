@@ -1,16 +1,16 @@
 package com.laze.springawsweb.domain.user;
 
 import com.laze.springawsweb.domain.posts.BaseTimeEntity;
+import com.laze.springawsweb.domain.user.Role;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.management.relation.Role;
-
 @Getter
 @NoArgsConstructor
 @Entity
+@Table(name = "users")
 public class User extends BaseTimeEntity {
 
     @Id
@@ -36,6 +36,13 @@ public class User extends BaseTimeEntity {
         this.email = email;
         this.picture = picture;
         this.role = role;
+    }
+
+    public User update(String name, String picture){
+        this.name = name;
+        this.picture = picture;
+
+        return this;
     }
 
     public String getRoleKey() {

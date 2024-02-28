@@ -2,9 +2,11 @@ package com.laze.springawsweb.config.auth;
 
 import com.laze.springawsweb.domain.user.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @RequiredArgsConstructor
@@ -27,11 +29,15 @@ public class SecurityConfig {
     // Spring Security 6.2 에서는 WebSecurityConfigurerAdapter 사용 불가 deprecated  -> SecurityFilterChain 등으로 변경 공식 Doc 참고해서 수정 필요
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**").permitAll()
-                .requestMatchers("/api/v1/**").hasRole(Role.USER.name())
+                .requestMatchers("/","/login","/index", "/css/**", "/images/**", "/js/**", "/h2-console/**").permitAll()
+                .requestMatchers(PathRequest.toH2Console()).permitAll()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .requestMatchers("/api/v1/**").hasAuthority("ROLE_" + Role.USER.name())
                 .anyRequest().authenticated()
-        ).oauth2Login(oauth2Login -> oauth2Login.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOauth2UserService)));
+        ).oauth2Login(oauth2Login -> oauth2Login.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOauth2UserService)))
+                .csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
+
 }

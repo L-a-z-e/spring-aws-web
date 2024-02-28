@@ -13,7 +13,7 @@
                     <!-- userName이 존재하지 않는 경우 ^ 사용 로그인 버튼 노출 -->
                     {{^userName}}
                         <!-- Spring Security에서 제공하는 기본적인 Login URL, 개발자가 별도의 Controller 생성할 필요없음-->
-                        <a href="/oauth2/authorization/google" class="btn btn-success active" role="button">Google Login</a>
+                        <a href="/login/oauth2/code/google" class="btn btn-success active" role="button">Google Login</a>
                     {{/userName}}
                 </div>
         </div>

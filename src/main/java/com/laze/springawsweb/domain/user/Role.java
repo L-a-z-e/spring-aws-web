@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Role {
 
-    // spring security에서 권한 코드에 항상 ROLE_이 뭍어있어야함
+    // spring security에서 권한 코드에 항상 ROLE_이 붙어있어야함
     GUEST("ROLE_GUEST", "손님"),
     USER("ROLE_USER", "일반사용자");
 
