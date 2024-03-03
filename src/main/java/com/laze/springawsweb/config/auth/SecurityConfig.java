@@ -2,18 +2,32 @@ package com.laze.springawsweb.config.auth;
 
 import com.laze.springawsweb.domain.user.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.server.header.XFrameOptionsServerHttpHeadersWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @RequiredArgsConstructor
 @EnableWebSecurity // Spring Security 활성화
 public class SecurityConfig {
 
     private final CustomOauth2UserService customOauth2UserService;
+
+    @Bean
+    @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
+    public WebSecurityCustomizer configureH2ConsoleEnable() {
+        return web -> web.ignoring()
+                .requestMatchers(PathRequest.toH2Console());
+    }
+
 
     /**
      * disalbe - csrf(), headers().frameoptions, - h2-console 사용 위해 disabled
@@ -28,16 +42,29 @@ public class SecurityConfig {
     @Bean
     // Spring Security 6.2 에서는 WebSecurityConfigurerAdapter 사용 불가 deprecated  -> SecurityFilterChain 등으로 변경 공식 Doc 참고해서 수정 필요
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((authorize) -> authorize
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((request) -> request
                 .requestMatchers("/","/login","/index", "/css/**", "/images/**", "/js/**", "/h2-console/**").permitAll()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers(
+                                AntPathRequestMatcher.antMatcher("/h2-console/**")
+                        ).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .requestMatchers("/api/v1/**").hasAuthority("ROLE_" + Role.USER.name())
                 .anyRequest().authenticated()
-        ).oauth2Login(oauth2Login -> oauth2Login.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOauth2UserService)))
-                .csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable);
+        )
+                .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
+                        HeadersConfigurer.FrameOptionsConfig::sameOrigin
+                ))
+                .oauth2Login(oauth2Login -> oauth2Login.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOauth2UserService)))
+                .build();
 
         return http.build();
     }
+
 
 }
