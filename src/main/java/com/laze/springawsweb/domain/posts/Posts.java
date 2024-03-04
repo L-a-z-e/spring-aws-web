@@ -1,9 +1,10 @@
 package com.laze.springawsweb.domain.posts;
 
-import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor // 기본생성자 자동 추가 public Posts(){}
