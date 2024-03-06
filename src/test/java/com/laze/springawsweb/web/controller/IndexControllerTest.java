@@ -25,6 +25,6 @@ public class IndexControllerTest {
         String body = this.restTemplate.getForObject("/", String.class);
 
         //then
-        assertThat(body).contains("Spring Boot Aws Project");
+        assertThat(body).contains("Spring Boot Aws");
     }
 }

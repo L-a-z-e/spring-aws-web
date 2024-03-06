@@ -1,9 +1,13 @@
 package com.laze.springawsweb.web.controller;
 
+import com.laze.springawsweb.config.auth.SecurityConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,7 +29,10 @@ import static org.hamcrest.Matchers.is;
  * 단, @Service, @Component, @Repository 사용 불가능
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = HelloController.class)
+@WebMvcTest(controllers = HelloController.class,
+excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+})
     public class HelloControllerTest {
 
     /**
@@ -50,6 +57,7 @@ import static org.hamcrest.Matchers.is;
      *  응답 본문의 내용 검증
      */
     @Test
+    @WithMockUser(roles = "USER")
     public void hello() throws Exception {
         String hello = "hello";
 
@@ -59,6 +67,7 @@ import static org.hamcrest.Matchers.is;
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     public void helloDto() throws Exception {
         //given
         String name = "hello";
